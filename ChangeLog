@@ -1,6 +1,19 @@
+2011-09-14  Daniel Collins  <solemnwarning@solemnwarning.net>
+
+	Avoid segmentation faults in forwarder function checks.
+
+	* pexports.h (dump_exports): Adjust prototype to accommodate new
+	'exports_size' argument; this is to be assigned and passed from...
+	* pexports.c (main): ...here; assigned value is determined from the
+	export table size recorded in the PE file image, whence passed to...
+	(dump_exports): ...here; it is used to avoid crashing or corruption
+	when the export table isn't at the end of its section.  Also check
+	for, and filter out duplicated symbol reports.
+
 2009-09-15  Charles Wilson  <cwilso11@users.sourceforge.net>
 
 	Slight build improvements.
+
 	* README: Update.
 	* Makefile: Rewrite dist rule to create a .tar.lzma instead
 	of a .zip (and don't create a tarbomb). 
@@ -8,6 +21,7 @@
 2009-09-15  Charles Wilson  <cwilso11@users.sourceforge.net>
 
 	Package 0.44-1-mingw32 fixes.
+
 	* pexports.c (main): Fix typo in usage statement.
 	* pexports.h: Ensure ULONGLONG is defined.
 	* Makefile: Force use of flex and bison, not lex and yacc.
@@ -15,6 +29,7 @@
 2008-08-31  Tor Lillqvist  <tml@novell.com>
 
 	Release 0.44. Add support for 64-bit executables.
+
 	* hlex.l
 	* hparse.y
 	* pexports.h

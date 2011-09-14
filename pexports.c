@@ -64,7 +64,7 @@ int
 main(int argc, char *argv[])
 {
   PIMAGE_SECTION_HEADER section;
-  DWORD exp_rva;
+  DWORD exp_rva, exp_size;
   int i;
 #if defined(_WIN32) && !defined(_WIN64)
 
@@ -174,10 +174,13 @@ main(int argc, char *argv[])
   nt_hdr32 = (PIMAGE_NT_HEADERS32) ((char *) dos_hdr + dos_hdr->e_lfanew);
   nt_hdr64 = (PIMAGE_NT_HEADERS64) nt_hdr32;
   
-  if (nt_hdr32->FileHeader.Machine == IMAGE_FILE_MACHINE_I386)
+  if (nt_hdr32->FileHeader.Machine == IMAGE_FILE_MACHINE_I386) {
     exp_rva = nt_hdr32->OptionalHeader.DataDirectory[0].VirtualAddress;
-  else
+    exp_size = nt_hdr32->OptionalHeader.DataDirectory[0].Size;
+  }else{
     exp_rva = nt_hdr64->OptionalHeader.DataDirectory[0].VirtualAddress;
+    exp_size = nt_hdr64->OptionalHeader.DataDirectory[0].Size;
+  }
 
   if (verbose)
     {
@@ -196,10 +199,10 @@ main(int argc, char *argv[])
     {
       section = IMAGE_SECTION_HDR(i);
       if (memcmp(section->Name, exp_sign, sizeof(exp_sign)) == 0)
-        dump_exports(section->VirtualAddress);
+        dump_exports(section->VirtualAddress, exp_size);
       else if ((exp_rva >= section->VirtualAddress) && 
           (exp_rva < (section->VirtualAddress + section->SizeOfRawData)))
-        dump_exports(exp_rva);
+        dump_exports(exp_rva, exp_size);
     }
 
   free(dos_hdr);
@@ -208,7 +211,7 @@ main(int argc, char *argv[])
 
 /* dump exported symbols on stdout */
 void
-dump_exports(DWORD exports_rva)
+dump_exports(DWORD exports_rva, DWORD exports_size)
 {
   PIMAGE_SECTION_HEADER section;
   PIMAGE_EXPORT_DIRECTORY exports;
@@ -259,21 +262,35 @@ dump_exports(DWORD exports_rva)
       dump_symbol(RVA_TO_PTR(name_table[i],char*),
                   ordinal_table[i] + exports->Base,
                   function_table[ordinal_table[i]]);
+      
+      int f_off = ordinal_table[i];
+      
+      if(function_table[f_off] >= exports_rva && function_table[f_off] < (exports_rva + exports_size) && verbose) {
+        printf(" ; Forwarder (%s)", RVA_TO_PTR(function_table[f_off], char*));
+      }
+      
       printf("\n");
     }
 
   for (i = 0; i < exports->NumberOfFunctions; i++)
     {
       if ( (function_table[i] >= exports_rva) && 
-           (function_table[i] <= (section->VirtualAddress + section->SizeOfRawData)))
+           (function_table[i] < (exports_rva + exports_size)))
         {
-          dump_symbol(strchr(RVA_TO_PTR(function_table[i],char*), '.')+1,
-                      i + exports->Base,
-                      function_table[i]);
-          if (verbose)
-            printf(" ; Forwarder\n");
-          else
-            printf("\n");
+          int name_present = 0, n;
+          
+          for(n = 0; n < exports->NumberOfNames; n++) {
+            if(ordinal_table[n] == i) {
+              name_present = 1;
+              break;
+            }
+          }
+          
+          if(!name_present) {
+            dump_symbol(strchr(RVA_TO_PTR(function_table[i],char*), '.')+1, i + exports->Base, function_table[i]);
+            
+            printf(" ; WARNING: Symbol name guessed from forwarder (%s)\n", RVA_TO_PTR(function_table[i], char*));
+          }
         }
     }
 }

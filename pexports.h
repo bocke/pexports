@@ -207,7 +207,7 @@ void *
 rva_to_ptr(DWORD rva);
 
 void
-dump_exports(DWORD exports_rva);
+dump_exports(DWORD exports_rva, DWORD exports_size);
 
 #define ADD_FUNCTION(nm,n) str_tree_add(&symbols, nm, (void*)(INT_PTR)n)
 extern str_tree *symbols;
