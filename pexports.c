@@ -1,7 +1,8 @@
 #include <string.h>
 #include <stdlib.h>
-#include <errno.h>
+#include <inttypes.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 #include "str_tree.h"
 #include "pexports.h"
@@ -302,7 +303,7 @@ dump_symbol(char *name, int ord, DWORD rva)
   str_tree *symbol = str_tree_find(symbols, name);
   /* if a symbol was found, emit size of stack */
   if (symbol)
-    sprintf(s, "%s@%"INT_PTR_FORMAT, name, (INT_PTR) symbol->extra);
+    sprintf(s, "%s@%"PRIdPTR, name, (intptr_t)(symbol->extra));
   else
     sprintf(s, "%s", name);
   

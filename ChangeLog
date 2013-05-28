@@ -1,3 +1,26 @@
+2013-05-28  Keith Marshall  <keithmarshall@users.sourceforge.net>
+
+	Correct some obfuscated typedef portability issues.
+
+	* pexports.c: Include inttypes.h; it permits use of...
+	(PRIdPTR): ...this ISO-C99 standard macro, in preference to...
+	(INT_PTR_FORMAT): ...this non-standard contrivance; similarly...
+	(intptr_t): ...substitute this ISO-C99 standard typedef...
+	(INT_PTR): ...for this non-standard type.
+
+	* pexports.h: Include stdint.h; typedef...
+	(BYTE): ...this, as explicitly equivalent to uint8_t.
+	(WORD): ...this, as explicitly equivalent to uint16_t.
+	(DWORD): ...this, as explicitly equivalent to uint32_t.
+	(INT_PTR, INT_PTR_FORMAT): No longer required; delete them.
+	(ULONGLONG): Explicitly typedef as equivalent to uint64_t; although
+	'unsigned long long' seems a better fit, our present usage requires
+	the explicit 64-bit association, and use of this standard type allows
+	us to eliminate all references to Microsoft's non-standard __int64.
+	(LONG): Explicitly typedef as equivalent to int32_t; technically, this
+	is incorrect, but misuse elsewhere requires the explicit 32-bit type,
+	which is not guaranteed by ISO-C99's standard 'long' type.
+
 2011-09-14  Daniel Collins  <solemnwarning@solemnwarning.net>
 
 	Avoid segmentation faults in forwarder function checks.

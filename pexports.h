@@ -14,32 +14,26 @@
 #define _pexports_h
 
 #include <stdio.h>
+#include <stdint.h>
 
 #include "str_tree.h"
 
 #define VER_MAJOR 0
 #define VER_MINOR 44
 
-/* These are needed */
-typedef unsigned short WORD;
-typedef unsigned int DWORD;
-typedef unsigned char BYTE;
+/* These are needed:
+ * FIXME: However, I'd really much prefer to see ISO-C99 standard
+ * types used throughout, in preference to these Micrsoft-inspired
+ * obfuscated typedefs.
+ */
+typedef uint8_t  BYTE;
+typedef uint16_t WORD;
+typedef uint32_t DWORD;
 typedef void* PVOID;
-typedef long LONG;
-#if defined(__MINGW32__) || defined(_MSC_VER)
-typedef unsigned __int64 ULONGLONG;
-#else
-typedef unsigned long long ULONGLONG;
-#endif
+typedef int32_t LONG;
+typedef uint64_t ULONGLONG;
 typedef int BOOL;
 typedef void* HMODULE;
-#ifdef _WIN64
-typedef __int64 INT_PTR;
-#define INT_PTR_FORMAT "I64d"
-#else
-typedef int INT_PTR;
-#define INT_PTR_FORMAT "d"
-#endif
 
 #define FALSE 0
 #define TRUE 1
@@ -209,7 +203,7 @@ rva_to_ptr(DWORD rva);
 void
 dump_exports(DWORD exports_rva, DWORD exports_size);
 
-#define ADD_FUNCTION(nm,n) str_tree_add(&symbols, nm, (void*)(INT_PTR)n)
+#define ADD_FUNCTION(nm,n) str_tree_add(&symbols, nm, (void*)(intptr_t)(n))
 extern str_tree *symbols;
 
 #endif /* _pexports_h */
