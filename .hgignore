@@ -1,6 +1,10 @@
 syntax: glob
 *.o
 *.exe
+build/
+Makefile
+configure
+autom4te.cache/
 pexports
 hparse.[ch]
 hlex.c

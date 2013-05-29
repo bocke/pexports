@@ -1,5 +1,13 @@
 2013-05-29  Keith Marshall  <keithmarshall@users.sourceforge.net>
 
+	Autoconfiscate.
+
+	* configure.ac Makefile.in: New files.
+	* Makefile: Now auto-generated at configure time; remove it.
+	* .hgignore: Add configure, Makefile, autom4te.cache and build dir.
+
+2013-05-29  Keith Marshall  <keithmarshall@users.sourceforge.net>
+
 	Integrate build-aux utilities as a submodule.
 
 	* .gitmodules .hgsub .hgsubstate: New files.
