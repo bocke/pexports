@@ -1,5 +1,12 @@
 2013-05-29  Keith Marshall  <keithmarshall@users.sourceforge.net>
 
+	Force a remake, on package version updates.
+
+	* Makefile.in (pexports.OBJEXT): Make it depend on Makefile; this
+	indirectly captures changes, when configure.ac is updated.
+
+2013-05-29  Keith Marshall  <keithmarshall@users.sourceforge.net>
+
 	Update program identification, via configuration process.
 
 	* pexports.c (main): Update identification text; remove references...

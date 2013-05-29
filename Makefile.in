@@ -99,6 +99,7 @@ sinclude *.dep
 %.c: %.y
 	$(YACC) $(YFLAGS) -o $@ $<
 
+pexports.$(OBJEXT): Makefile
 hlex.$(OBJEXT): hlex.c hparse.h
 hparse.h: hparse.c
 
