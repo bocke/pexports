@@ -18,9 +18,6 @@
 
 #include "str_tree.h"
 
-#define VER_MAJOR 0
-#define VER_MINOR 44
-
 /* These are needed:
  * FIXME: However, I'd really much prefer to see ISO-C99 standard
  * types used throughout, in preference to these Micrsoft-inspired

@@ -141,9 +141,9 @@ main(int argc, char *argv[])
 
   if (filename == NULL)
     {
-      printf("PExports %d.%d Copyright 1998, Anders Norlander\n"
-      	     "Changed 1999, Paul Sokolovsky\n"
-      	     "Changed 2008, Tor Lillqvist\n"
+      printf("PExports %s; Originally written 1998, Anders Norlander\n"
+      	     "Updated 1999, Paul Sokolovsky, 2008, Tor Lillqvist, 2013, Keith Marshall\n"
+	     "Copyright (C) 1998, 1999, 2008, 2013, MinGW.org Project\n\n"
              "This program is free software; you may redistribute it under the terms of\n"
              "the GNU General Public License.  This program has absolutely no warranty.\n"
 
@@ -152,11 +152,8 @@ main(int argc, char *argv[])
              "  -o\tprint ordinals\n"
              "  -p\tset preprocessor program\n"
              "  -v\tverbose mode\n"
-             "\nReport bugs to anorland@hem2.passagen.se,\n"
-	     "Paul.Sokolovsky@technologist.com\n"
-	     "or tml@iki.fi\n",
-             VER_MAJOR, VER_MINOR,
-             program_name);
+             "\nReport bugs as directed at %s\n",
+             PACKAGE_VERSION_STRING, program_name, PACKAGE_BUG_REPORT);
       return 1;
     }
 

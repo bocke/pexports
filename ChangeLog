@@ -1,5 +1,23 @@
 2013-05-29  Keith Marshall  <keithmarshall@users.sourceforge.net>
 
+	Update program identification, via configuration process.
+
+	* pexports.c (main): Update identification text; remove references...
+	(VER_MAJOR, VER_MINOR): ...to these; combine them by substituting...
+	(PACKAGE_VERSION_STRING): ...this new macro; also amend instructions
+	for reporting bugs, as directed at URL identified by...
+	(PACKAGE_BUG_REPORT): ...this additional new macro.
+
+	* pexports.h (VER_MAJOR, VER_MINOR): Obsolete macros; delete them.
+
+	* Makefile.in (PACKAGE_DEFS): New macro; defined in terms of these...
+	(PACKAGE_VERSION_STRING, PACKAGE_BUG_REPORT_URL, PACKAGE_BUG_REPORT):
+	...these additional new macros, defined by AC_SUBST from configure.ac,
+	and subsequently propagated to pexports.c, as an addendum to...
+	(CDEPFLAGS): ...this.
+
+2013-05-29  Keith Marshall  <keithmarshall@users.sourceforge.net>
+
 	Autoconfiscate.
 
 	* configure.ac Makefile.in: New files.
