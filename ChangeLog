@@ -1,3 +1,9 @@
+2013-05-29  Keith Marshall  <keithmarshall@users.sourceforge.net>
+
+	Integrate build-aux utilities as a submodule.
+
+	* .gitmodules .hgsub .hgsubstate: New files.
+
 2013-05-28  Keith Marshall  <keithmarshall@users.sourceforge.net>
 
 	Designate files which mercurial should not track.

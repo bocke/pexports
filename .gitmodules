@@ -1,0 +1,3 @@
+[submodule "build-aux"]
+	path = build-aux
+	url = git://mingw.git.sourceforge.net/gitroot/mingw/build-aux
