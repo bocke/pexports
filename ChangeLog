@@ -1,3 +1,12 @@
+2013-05-30  Keith Marshall  <keithmarshall@users.sourceforge.net>
+
+	Assemble licence and documentation tarballs for distribution.
+
+	* Makefile.in (dist): Add dependencies on...
+	(licdist, docdist): ...these new build goals; specify them based on...
+	(LIC_DISTFILES, DOC_DISTFILES): ...these new macros; define them as
+	the respective list of files to include in each tarball.
+
 2013-05-29  Keith Marshall  <keithmarshall@users.sourceforge.net>
 
 	Force a remake, on package version updates.

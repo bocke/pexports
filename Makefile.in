@@ -63,6 +63,14 @@ AUX_DISTFILES = \
 #
 BIN_DISTFILES = pexports$(EXEEXT)
 
+# Files to be included in a documentation tarball.
+#
+DOC_DISTFILES = README ChangeLog
+
+# Files to be included in a licence tarball.
+#
+LIC_DISTFILES = COPYING
+
 OBJECT_FILES = \
   hlex.$(OBJEXT) hparse.$(OBJEXT) pexports.$(OBJEXT) str_tree.$(OBJEXT)
 
@@ -119,7 +127,7 @@ uninstall:
 
 # Distribution.
 #
-dist: srcdist bindist
+dist: srcdist bindist docdist licdist
 
 abs_top_srcdir = @abs_top_srcdir@
 
@@ -147,6 +155,26 @@ bindist: $(BIN_DISTFILES)
 	$(RM) -r tmp
 	$(MAKE) prefix=`pwd`/tmp install
 	cd tmp && tar -chof - bin | xz > ../$(PACKAGE_DISTNAME)-bin.tar.xz
+	$(RM) -r tmp
+
+docdist:
+	$(RM) -r tmp
+	$(MKDIR_P) tmp/share/doc/$(PACKAGE_TARNAME)/$(PACKAGE_VERSION)
+	cd tmp/share/doc/$(PACKAGE_TARNAME)/$(PACKAGE_VERSION) && \
+	for file in $(DOC_DISTFILES); \
+	  do $(LN_S) ${abs_top_srcdir}/$$file .; \
+	  done
+	cd tmp && tar -chof - share | xz > ../$(PACKAGE_DISTNAME)-doc.tar.xz
+	$(RM) -r tmp
+
+licdist:
+	$(RM) -r tmp
+	$(MKDIR_P) tmp/share/doc/$(PACKAGE_TARNAME)/$(PACKAGE_VERSION)
+	cd tmp/share/doc/$(PACKAGE_TARNAME)/$(PACKAGE_VERSION) && \
+	for file in $(LIC_DISTFILES); \
+	  do $(LN_S) ${abs_top_srcdir}/$$file .; \
+	  done
+	cd tmp && tar -chof - share | xz > ../$(PACKAGE_DISTNAME)-lic.tar.xz
 	$(RM) -r tmp
 
 # Clean-up.
