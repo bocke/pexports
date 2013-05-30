@@ -1,5 +1,12 @@
 2013-05-30  Keith Marshall  <keithmarshall@users.sourceforge.net>
 
+	Prepare, tag, and publish 0.46 release.
+
+	* README: Add release notes.
+	* All files: Tagged "v0_46" for release.
+
+2013-05-30  Keith Marshall  <keithmarshall@users.sourceforge.net>
+
 	Assemble licence and documentation tarballs for distribution.
 
 	* Makefile.in (dist): Add dependencies on...
