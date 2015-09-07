@@ -1,3 +1,19 @@
+2015-09-07  Keith Marshall  <keithmarshall@users.sourceforge.net>
+
+	Eliminate Microsoft inspired obfuscated typedef insanity.
+
+	* pexports.c pexports.h (BYTE, WORD, DWORD): Delete typedefs;
+	respectively replace all corresponding usage instances with...
+	(uint8_t, uint16_t, uint32_t): ...these ISO-C standard types.
+	(PVOID, PIMAGE_DOS_HEADER, PIMAGE_FILE_HEADER, PIMAGE_SECTION_HEADER)
+	(PIMAGE_DATA_DIRECTORY, PIMAGE_EXPORT_DIRECTORY, PIMAGE_NT_HEADERS32)
+	(PIMAGE_NT_HEADERS64, PIMAGE_OPTIONAL_HEADER32)
+	(PIMAGE_OPTIONAL_HEADER64): Delete these non-standard style pointer
+	reference typedefs; replace with conventional pointer references to
+	the underlying data type; where these are structural types, delete
+	initial underscores from the corresponding structure tag names.
+	(HMODULE): Likewise; replace with pointer to void.
+
 2013-05-30  Keith Marshall  <keithmarshall@users.sourceforge.net>
 
 	Prepare, tag, and publish 0.46 release.

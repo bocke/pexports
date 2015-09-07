@@ -18,13 +18,14 @@
 #endif
 
 /* get pointer to section header n */
-#define IMAGE_SECTION_HDR(n) ((PIMAGE_SECTION_HEADER) ((char *) nt_hdr32 + \
-                                    4 + sizeof(IMAGE_FILE_HEADER) + \
-                                    nt_hdr32->FileHeader.SizeOfOptionalHeader + \
-                                    n * sizeof(IMAGE_SECTION_HEADER)))
+#define IMAGE_SECTION_HDR(n) \
+  ((IMAGE_SECTION_HEADER *)((char *) nt_hdr32 \
+    + 4 + sizeof(IMAGE_FILE_HEADER) + nt_hdr32->FileHeader.SizeOfOptionalHeader \
+    + n * sizeof(IMAGE_SECTION_HEADER)) \
+  )
 
 /* convert relative virtual address to a useable pointer */
-#define RVA_TO_PTR(rva,type) ((type) rva_to_ptr((DWORD) rva))
+#define RVA_TO_PTR(rva,type) ((type)(rva_to_ptr((uint32_t)(rva))))
 
 typedef struct str_list {
   char *s;
@@ -38,15 +39,15 @@ static void add_path_list(char *path);
 static const char *find_file(const char *name);
 static void str_list_add(str_list **head, const char *s);
 static void parse_headers();
-static void dump_symbol(char *name, int ord, DWORD rva);
+static void dump_symbol(char *name, int ord, uint32_t rva);
 
 static const char mz_sign[2] = {'M','Z'};
 static const char pe_sign[4] = {'P','E','\0','\0'};
 static const char exp_sign[6] = {'.','e','d','a','t','a'};
 
-static PIMAGE_DOS_HEADER dos_hdr;
-static PIMAGE_NT_HEADERS32 nt_hdr32;
-static PIMAGE_NT_HEADERS64 nt_hdr64;
+static IMAGE_DOS_HEADER   *dos_hdr;
+static IMAGE_NT_HEADERS32 *nt_hdr32;
+static IMAGE_NT_HEADERS64 *nt_hdr64;
 
 static char *filename = NULL;
 static char *program_name;
@@ -64,31 +65,30 @@ extern FILE *yyin;
 int
 main(int argc, char *argv[])
 {
-  PIMAGE_SECTION_HEADER section;
-  DWORD exp_rva, exp_size;
+  IMAGE_SECTION_HEADER *section;
+  uint32_t exp_rva, exp_size;
   int i;
-#if defined(_WIN32) && !defined(_WIN64)
 
-  /* If running on 64-bit Windows and built as a 32-bit process, try
+# if defined(_WIN32) && !defined(_WIN64)
+  /*
+   * If running on 64-bit Windows and built as a 32-bit process, try
    * disable Wow64 file system redirection, so that we can open DLLs
    * in the real system32 folder if requested.
    */
+  void *old_redirection;
+  void *kernel32;
 
-  PVOID old_redirection;
+  extern __declspec(dllimport) void __stdcall *GetModuleHandleA(char *name);
+  extern __declspec(dllimport) void __stdcall *GetProcAddress(void *module, char *name);
 
-  HMODULE kernel32;
-
-  extern __declspec(dllimport) HMODULE __stdcall GetModuleHandleA(char *name);
-  extern __declspec(dllimport) PVOID __stdcall GetProcAddress(HMODULE module, char *name);
-
-  BOOL (__stdcall *pWow64DisableWow64FsRedirection) (PVOID *old_value);
+  int32_t (__stdcall *pWow64DisableWow64FsRedirection) (void **old_value);
 
   kernel32 = GetModuleHandleA("kernel32.dll");
   pWow64DisableWow64FsRedirection = GetProcAddress(kernel32, "Wow64DisableWow64FsRedirection");
 
   if (pWow64DisableWow64FsRedirection)
     pWow64DisableWow64FsRedirection(&old_redirection);
-#endif
+# endif
 
   program_name = argv[0];
 
@@ -161,17 +161,16 @@ main(int argc, char *argv[])
   parse_headers();
 
   /* load file */
-  dos_hdr = load_pe_image(filename);
-  if (dos_hdr == NULL)
+  if( (dos_hdr = load_pe_image(filename)) == NULL )
     {
       fprintf(stderr, "%s: %s: could not load PE image\n",
               program_name, filename);
       return 1;
     }
 
-  nt_hdr32 = (PIMAGE_NT_HEADERS32) ((char *) dos_hdr + dos_hdr->e_lfanew);
-  nt_hdr64 = (PIMAGE_NT_HEADERS64) nt_hdr32;
-  
+  nt_hdr32 = (IMAGE_NT_HEADERS32 *) ((char *) dos_hdr + dos_hdr->e_lfanew);
+  nt_hdr64 = (IMAGE_NT_HEADERS64 *) nt_hdr32;
+
   if (nt_hdr32->FileHeader.Machine == IMAGE_FILE_MACHINE_I386) {
     exp_rva = nt_hdr32->OptionalHeader.DataDirectory[0].VirtualAddress;
     exp_size = nt_hdr32->OptionalHeader.DataDirectory[0].Size;
@@ -198,7 +197,7 @@ main(int argc, char *argv[])
       section = IMAGE_SECTION_HDR(i);
       if (memcmp(section->Name, exp_sign, sizeof(exp_sign)) == 0)
         dump_exports(section->VirtualAddress, exp_size);
-      else if ((exp_rva >= section->VirtualAddress) && 
+      else if ((exp_rva >= section->VirtualAddress) &&
           (exp_rva < (section->VirtualAddress + section->SizeOfRawData)))
         dump_exports(exp_rva, exp_size);
     }
@@ -209,14 +208,14 @@ main(int argc, char *argv[])
 
 /* dump exported symbols on stdout */
 void
-dump_exports(DWORD exports_rva, DWORD exports_size)
+dump_exports(uint32_t exports_rva, uint32_t exports_size)
 {
-  PIMAGE_SECTION_HEADER section;
-  PIMAGE_EXPORT_DIRECTORY exports;
+  IMAGE_SECTION_HEADER *section;
+  IMAGE_EXPORT_DIRECTORY *exports;
   char *export_name;
-  WORD *ordinal_table;
-  DWORD *name_table;
-  DWORD *function_table;
+  uint16_t *ordinal_table;
+  uint32_t *name_table;
+  uint32_t *function_table;
   int i;
   static int first = 1;
 
@@ -226,12 +225,12 @@ dump_exports(DWORD exports_rva, DWORD exports_size)
     printf("; Reading exports from section: %s\n",
             section->Name);
 
-  exports = RVA_TO_PTR(exports_rva, PIMAGE_EXPORT_DIRECTORY);
+  exports = RVA_TO_PTR(exports_rva, IMAGE_EXPORT_DIRECTORY *);
 
   /* set up various pointers */
   export_name = RVA_TO_PTR(exports->Name,char*);
-  ordinal_table = RVA_TO_PTR(exports->AddressOfNameOrdinals,WORD*);
-  name_table = RVA_TO_PTR(exports->AddressOfNames,DWORD*);
+  ordinal_table = RVA_TO_PTR(exports->AddressOfNameOrdinals, uint16_t *);
+  name_table = RVA_TO_PTR(exports->AddressOfNames, uint32_t *);
   function_table = RVA_TO_PTR(exports->AddressOfFunctions,void*);
 
   if (verbose)
@@ -260,33 +259,33 @@ dump_exports(DWORD exports_rva, DWORD exports_size)
       dump_symbol(RVA_TO_PTR(name_table[i],char*),
                   ordinal_table[i] + exports->Base,
                   function_table[ordinal_table[i]]);
-      
+
       int f_off = ordinal_table[i];
-      
+
       if(function_table[f_off] >= exports_rva && function_table[f_off] < (exports_rva + exports_size) && verbose) {
         printf(" ; Forwarder (%s)", RVA_TO_PTR(function_table[f_off], char*));
       }
-      
+
       printf("\n");
     }
 
   for (i = 0; i < exports->NumberOfFunctions; i++)
     {
-      if ( (function_table[i] >= exports_rva) && 
+      if ( (function_table[i] >= exports_rva) &&
            (function_table[i] < (exports_rva + exports_size)))
         {
           int name_present = 0, n;
-          
+
           for(n = 0; n < exports->NumberOfNames; n++) {
             if(ordinal_table[n] == i) {
               name_present = 1;
               break;
             }
           }
-          
+
           if(!name_present) {
             dump_symbol(strchr(RVA_TO_PTR(function_table[i],char*), '.')+1, i + exports->Base, function_table[i]);
-            
+
             printf(" ; WARNING: Symbol name guessed from forwarder (%s)\n", RVA_TO_PTR(function_table[i], char*));
           }
         }
@@ -294,7 +293,7 @@ dump_exports(DWORD exports_rva, DWORD exports_size)
 }
 
 static void
-dump_symbol(char *name, int ord, DWORD rva)
+dump_symbol(char *name, int ord, uint32_t rva)
 {
   char s[256];
   str_tree *symbol = str_tree_find(symbols, name);
@@ -303,7 +302,7 @@ dump_symbol(char *name, int ord, DWORD rva)
     sprintf(s, "%s@%"PRIdPTR, name, (intptr_t)(symbol->extra));
   else
     sprintf(s, "%s", name);
-  
+
   /* output ordinal */
   if (ordinal_flag)
     printf("%-24s\t@%d", s, ord);
@@ -311,7 +310,7 @@ dump_symbol(char *name, int ord, DWORD rva)
     printf("%s", s);
 
   {
-    PIMAGE_SECTION_HEADER s=find_section(rva);
+    IMAGE_SECTION_HEADER *s = find_section(rva);
 
     /* Stupid msvc doesn't have .bss section, it spews uninitilized data
      * to no section
@@ -329,23 +328,22 @@ dump_symbol(char *name, int ord, DWORD rva)
 }
 
 /* get section to which rva points */
-PIMAGE_SECTION_HEADER
-find_section(DWORD rva)
+IMAGE_SECTION_HEADER *find_section(uint32_t rva)
 {
   int i;
-  PIMAGE_SECTION_HEADER section = IMAGE_SECTION_HDR(0);
+  IMAGE_SECTION_HEADER *section = IMAGE_SECTION_HDR(0);
   for (i = 0; i < nt_hdr32->FileHeader.NumberOfSections; i++, section++)
-    if ((rva >= section->VirtualAddress) && 
+    if ((rva >= section->VirtualAddress) &&
         (rva <= (section->VirtualAddress + section->SizeOfRawData)))
       return section;
-  return NULL;  
+  return NULL;
 }
 
 /* convert rva to pointer into loaded file */
 void *
-rva_to_ptr(DWORD rva)
+rva_to_ptr(uint32_t rva)
 {
-  PIMAGE_SECTION_HEADER section = find_section(rva);
+  IMAGE_SECTION_HEADER *section = find_section(rva);
   if (section->PointerToRawData == 0)
     return NULL;
   else
@@ -353,25 +351,24 @@ rva_to_ptr(DWORD rva)
 }
 
 /* Load a portable executable into memory */
-PIMAGE_DOS_HEADER
-load_pe_image(const char *filename)
+IMAGE_DOS_HEADER *load_pe_image(const char *filename)
 {
 #ifdef _MSC_VER
   struct _stat32 st;
 #else
   struct stat st;
 #endif
-  PIMAGE_DOS_HEADER phdr;
+  IMAGE_DOS_HEADER *phdr;
   FILE *f;
-  
+
   if (stat(filename, &st) == -1)
     {
       perror("stat");
       return NULL;
     }
 
-  phdr = (PIMAGE_DOS_HEADER) xmalloc(st.st_size);
-  
+  phdr = (IMAGE_DOS_HEADER *) xmalloc(st.st_size);
+
   f = fopen(filename, "rb");
 
   if (f == NULL)
@@ -479,8 +476,7 @@ parse_headers()
 }
 
 /* allocate memory; abort on failure */
-static void 
-*xmalloc(size_t count)
+static void *xmalloc(size_t count)
 {
   void *p = malloc(count);
   if (p == NULL)
