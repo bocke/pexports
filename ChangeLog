@@ -1,5 +1,15 @@
 2015-09-07  Keith Marshall  <keithmarshall@users.sourceforge.net>
 
+	Avoid uint32_t difference overflow in 64-bit pointer adjustment.
+
+	* pexports.c (rva_to_ptr): Do not compute uint32_t offset differences;
+	apply each offset adjustment individually to the base pointer.
+
+	* pexports.h: Add '#pragma ms_struct on', to keep structures aligned
+	per MSVC convention.
+
+2015-09-07  Keith Marshall  <keithmarshall@users.sourceforge.net>
+
 	Eliminate Microsoft inspired obfuscated typedef insanity.
 
 	* pexports.c pexports.h (BYTE, WORD, DWORD): Delete typedefs;

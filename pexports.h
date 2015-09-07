@@ -12,6 +12,8 @@
 #ifndef _pexports_h
 #define _pexports_h
 
+#pragma ms_struct on
+
 #include <stdio.h>
 #include <stdint.h>
 

@@ -228,10 +228,10 @@ dump_exports(uint32_t exports_rva, uint32_t exports_size)
   exports = RVA_TO_PTR(exports_rva, IMAGE_EXPORT_DIRECTORY *);
 
   /* set up various pointers */
-  export_name = RVA_TO_PTR(exports->Name,char*);
-  ordinal_table = RVA_TO_PTR(exports->AddressOfNameOrdinals, uint16_t *);
+  export_name = RVA_TO_PTR(exports->Name, char *);
   name_table = RVA_TO_PTR(exports->AddressOfNames, uint32_t *);
-  function_table = RVA_TO_PTR(exports->AddressOfFunctions,void*);
+  ordinal_table = RVA_TO_PTR(exports->AddressOfNameOrdinals, uint16_t *);
+  function_table = RVA_TO_PTR(exports->AddressOfFunctions, void *);
 
   if (verbose)
     {
@@ -344,10 +344,9 @@ void *
 rva_to_ptr(uint32_t rva)
 {
   IMAGE_SECTION_HEADER *section = find_section(rva);
-  if (section->PointerToRawData == 0)
-    return NULL;
-  else
-    return ((char *) dos_hdr + rva - (section->VirtualAddress - section->PointerToRawData));
+  return (section->PointerToRawData != 0)
+    ? (char *)(dos_hdr) + rva - section->VirtualAddress + section->PointerToRawData
+    : NULL;
 }
 
 /* Load a portable executable into memory */
