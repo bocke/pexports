@@ -1,8 +1,8 @@
 # configure.ac for pexports
 # Created 2013-05-29 by Keith Marshall <keithmarshall@users.sourceforge.net>
-# Copyright (C) 2013, MinGW.org Project.
+# Copyright (C) 2013, 2015, MinGW.org Project.
 #
-  AC_INIT([pexports],[0.46],[http://mingw.org/reporting_bugs])
+  AC_INIT([pexports],[0.47],[http://mingw.org/reporting_bugs])
 #
 # Directory organisation.
 #

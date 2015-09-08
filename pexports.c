@@ -141,19 +141,20 @@ main(int argc, char *argv[])
 
   if (filename == NULL)
     {
-      printf("PExports %s; Originally written 1998, Anders Norlander\n"
-      	     "Updated 1999, Paul Sokolovsky, 2008, Tor Lillqvist, 2013, Keith Marshall\n"
-	     "Copyright (C) 1998, 1999, 2008, 2013, MinGW.org Project\n\n"
-             "This program is free software; you may redistribute it under the terms of\n"
-             "the GNU General Public License.  This program has absolutely no warranty.\n"
+      printf(
+	"PExports %s; Originally written 1998, Anders Norlander\n"
+   	"Updated 1999, Paul Sokolovsky, 2008, Tor Lillqvist, 2013, 2015, Keith Marshall\n"
+	"Copyright (C) 1998, 1999, 2008, 2013, 2015, MinGW.org Project\n\n"
+	"This program is free software; you may redistribute it under the terms of\n"
+	"the GNU General Public License.  This program has absolutely no warranty.\n"
 
-             "\nUsage: %s [-v] [-o] [-h header] [-p preprocessor] dll\n"
-             "  -h\tparse header\n"
-             "  -o\tprint ordinals\n"
-             "  -p\tset preprocessor program\n"
-             "  -v\tverbose mode\n"
-             "\nReport bugs as directed at %s\n",
-             PACKAGE_VERSION_STRING, program_name, PACKAGE_BUG_REPORT);
+	"\nUsage: %s [-v] [-o] [-h header] [-p preprocessor] dll\n"
+	"  -h\tparse header\n"
+	"  -o\tprint ordinals\n"
+	"  -p\tset preprocessor program\n"
+	"  -v\tverbose mode\n"
+	"\nReport bugs as directed at %s\n",
+	PACKAGE_VERSION_STRING, program_name, PACKAGE_BUG_REPORT);
       return 1;
     }
 

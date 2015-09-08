@@ -1,4 +1,4 @@
-PEXPORTS 0.46 README
+PEXPORTS 0.47 README
 ============================================
 
 Anders Norlander <anorland@hem2.passagen.se>
@@ -8,6 +8,8 @@ Hacked by Paul.Sokolovsky@technologist.com
 URL: http://www.is.lg.ua/~paul/devel/binutils.html
 
 Hacked by Tor Lillqvist <tml@iki.fi>
+
+Hacked by Keith Marshall <keithmarshall@users.sourceforge.net>
 
 ============================================
 
@@ -40,6 +42,13 @@ check the number of arguments a function expects. It is NOT a complete
 C parser, there are probably many conditions when it will fail
 (especially complex parameter types), although I it works fine for me.
 Please do not report bugs, but feel free to send patches.
+
+RELEASE 0.47
+=================
+* Eliminate Microsoft style typedef obfuscation.
+* Correct a further potential segmentation fault, resulting from
+  overflow when computing 32-bit offset differences, which are then
+  applied to 64-bit pointers.
 
 RELEASE 0.46
 =================

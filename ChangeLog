@@ -1,3 +1,15 @@
+2015-09-08  Keith Marshall  <keithmarshall@users.sourceforge.net>
+
+	Prepare, tag, and publish 0.47 release.
+
+	* configure.ac: Update copyright notice.
+	(AC_INIT): Increment PACKAGE_VERSION assignment to 0.47
+
+	* pexports.c: Update copyright notice.
+
+	* README: Add release notes.
+	* All files: Tagged "v0_47" for release.
+
 2015-09-07  Keith Marshall  <keithmarshall@users.sourceforge.net>
 
 	Avoid uint32_t difference overflow in 64-bit pointer adjustment.
