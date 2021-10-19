@@ -1,4 +1,14 @@
-PEXPORTS 0.47 README
+README
+======
+
+Export from MinGW OSDN repo. 
+
+TODO: add "build-aux" submodule so it can be built from this tree.
+
+Plans: None, other than making it compile without external deps.
+
+
+PEXPORTS 0.47
 ============================================
 
 Anders Norlander <anorland@hem2.passagen.se>
