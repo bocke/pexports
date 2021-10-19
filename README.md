@@ -2,7 +2,7 @@ PEXPORTS 0.47 README
 ============================================
 
 Anders Norlander <anorland@hem2.passagen.se>
-URL: hem2.passagen.se/anorland/
+URL: http://hem2.passagen.se/anorland/
 
 Hacked by Paul.Sokolovsky@technologist.com
 URL: http://www.is.lg.ua/~paul/devel/binutils.html
