@@ -36,10 +36,10 @@ while if built for Cygwin (or \*nix) it uses ':'.
 
 ## Command line options:
 
- -h <header> parse header
- -o print function ordinals
- -p <preprocessor> set preprocessor
- -v verbose mode
+ * -h <header> parse header
+ * -o print function ordinals
+ * -p <preprocessor> set preprocessor
+ * -v verbose mode
 
 Header files are searched for in the following directories:
 
