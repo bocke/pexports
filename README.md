@@ -20,7 +20,7 @@ path.
 Note that the Windows version uses ';' as path separator,
 while if built for Cygwin (or \*nix) it uses ':'.
 
-## Command line options:
+### Command line options:
 
  * -h <header> parse header
  * -o print function ordinals
@@ -33,7 +33,9 @@ Header files are searched for in the following directories:
  2. Directories in C_INCLUDE_PATH
  3. Directories in CPLUS_INCLUDE_PATH
 
-NOTE: The header parser is *very* primitive, and might be of
+### NOTE 
+
+The header parser is *very* primitive, and might be of
 questionable usefulness. It only tries to find function prototypes and
 check the number of arguments a function expects. It is NOT a complete
 C parser, there are probably many conditions when it will fail
