@@ -52,7 +52,7 @@ Please do not report bugs, but feel free to send patches.
  * Bojan Popovic (this GitHub repo)
 
 
-## COYRIGHT
+## COPYRIGHT
 
 Pexports, Copyright (C) 1998 Anders Norlander
 
