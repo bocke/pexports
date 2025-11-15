@@ -1,16 +1,13 @@
 README
 ======
 
-Export from MinGW OSDN repo. 
-
-Converted to meson from autoconf to avoid dependency on build-aux package.
+Export from MinGW OSDN repo: converted to meson from autoconf to avoid dependency on build-aux package.
 
 Plans: None, other than making it compile without external deps.
 
+**NOTE**: The following text below is from the original docs for 0.47!
 
-## PEXPORTS 0.47 
-
-**NOTE**: The following text is from the original docs for 0.47!
+## PEXPORTS
 
 PEXPORTS is a program to extract exported symbols from a PE image
 (executable). It can perform a simple check on the size of the
@@ -22,7 +19,6 @@ path.
 
 Note that the Windows version uses ';' as path separator,
 while if built for Cygwin (or \*nix) it uses ':'.
-
 
 ## Command line options:
 
@@ -43,7 +39,6 @@ check the number of arguments a function expects. It is NOT a complete
 C parser, there are probably many conditions when it will fail
 (especially complex parameter types), although I it works fine for me.
 Please do not report bugs, but feel free to send patches.
-
 
 ## CREDITS
 
