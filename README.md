@@ -124,4 +124,4 @@ for details.
  * Tor Lillqvist
  * Keith Marshall (SourceForge)
  * MinGW32 OSDN repo maintainers until circa 2023
- * Bojan Popovic (this repo)
+ * Bojan Popovic (this GitHub repo)
