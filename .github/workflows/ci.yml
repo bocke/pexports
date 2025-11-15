@@ -1,0 +1,135 @@
+name: CI/CD Build
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  release:
+    types: [ created ]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }} - ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows 64-bit
+          - os: windows-latest
+            arch: x64
+            artifact_name: pexports-windows-x64
+            executable_ext: .exe
+          
+          # macOS Universal Binary (ARM64 + x86_64)
+          - os: macos-latest
+            arch: universal
+            artifact_name: pexports-macos-universal
+            executable_ext: ''
+          
+          # Linux 64-bit
+          - os: ubuntu-latest
+            arch: x64
+            artifact_name: pexports-linux-x64
+            executable_ext: ''
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install Meson and Ninja
+      run: pip install meson ninja
+
+    - name: Install dependencies (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        choco install winflexbison3
+        echo "C:\ProgramData\chocolatey\lib\winflexbison3\tools" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - name: Install dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew install flex bison
+        echo "/opt/homebrew/opt/flex/bin" >> $GITHUB_PATH
+        echo "/opt/homebrew/opt/bison/bin" >> $GITHUB_PATH
+
+    - name: Install dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y flex bison
+
+    - name: Configure Meson (Windows/Linux)
+      if: matrix.arch != 'universal'
+      run: meson setup builddir --buildtype=release
+
+    - name: Configure Meson (macOS Universal)
+      if: matrix.arch == 'universal'
+      run: |
+        meson setup builddir --buildtype=release \
+          -Dc_args="-arch x86_64 -arch arm64" \
+          -Dc_link_args="-arch x86_64 -arch arm64"
+
+    - name: Build
+      run: meson compile -C builddir
+
+    - name: Test executable
+      run: |
+        ./builddir/pexports${{ matrix.executable_ext }} || true
+      shell: bash
+
+    - name: Prepare artifacts
+      run: |
+        mkdir -p dist
+        cp builddir/pexports${{ matrix.executable_ext }} dist/
+        cp README.md dist/
+        cp COPYING dist/
+        cp AUTHORS dist/
+      shell: bash
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.artifact_name }}
+        path: dist/*
+        retention-days: 30
+
+    - name: Create release archive (Unix)
+      if: github.event_name == 'release' && runner.os != 'Windows'
+      run: |
+        cd dist
+        tar -czf ../${{ matrix.artifact_name }}.tar.gz *
+
+    - name: Create release archive (Windows)
+      if: github.event_name == 'release' && runner.os == 'Windows'
+      run: |
+        cd dist
+        Compress-Archive -Path * -DestinationPath ../${{ matrix.artifact_name }}.zip
+
+    - name: Upload to release (Unix)
+      if: github.event_name == 'release' && runner.os != 'Windows'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./${{ matrix.artifact_name }}.tar.gz
+        asset_name: ${{ matrix.artifact_name }}.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload to release (Windows)
+      if: github.event_name == 'release' && runner.os == 'Windows'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./${{ matrix.artifact_name }}.zip
+        asset_name: ${{ matrix.artifact_name }}.zip
+        asset_content_type: application/zip
