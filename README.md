@@ -33,7 +33,7 @@ Header files are searched for in the following directories:
  2. Directories in C_INCLUDE_PATH
  3. Directories in CPLUS_INCLUDE_PATH
 
-### NOTE 
+### Note 
 
 The header parser is *very* primitive, and might be of
 questionable usefulness. It only tries to find function prototypes and
