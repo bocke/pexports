@@ -10,8 +10,10 @@ project(
   ]
 )
 
-# Declare host OS for packaging purposes
-host_os = host_machine.system()
+# Set POSIX feature test macro for compatible systems
+if host_machine.system() in ['linux', 'freebsd', 'openbsd', 'netbsd', 'sunos', 'darwin']
+  add_project_arguments('-D_POSIX_C_SOURCE=200809L', language: 'c')
+endif
 
 # Declare a dependency for flex and bison
 flex = find_program('flex', 'lex')
