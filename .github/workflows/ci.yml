@@ -8,6 +8,10 @@ on:
   release:
     types: [ created ]
 
+# Add explicit permissions
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build on ${{ matrix.os }} - ${{ matrix.arch }}
@@ -21,18 +25,21 @@ jobs:
             arch: x64
             artifact_name: pexports-windows-x64
             executable_ext: .exe
+            archive_ext: zip
           
           # macOS Universal Binary (ARM64 + x86_64)
           - os: macos-latest
             arch: universal
             artifact_name: pexports-macos-universal
             executable_ext: ''
+            archive_ext: tar.gz
           
           # Linux 64-bit
           - os: ubuntu-latest
             arch: x64
             artifact_name: pexports-linux-x64
             executable_ext: ''
+            archive_ext: tar.gz
 
     steps:
     - name: Checkout code
@@ -93,43 +100,29 @@ jobs:
         cp AUTHORS dist/
       shell: bash
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ matrix.artifact_name }}
-        path: dist/*
-        retention-days: 30
-
     - name: Create release archive (Unix)
-      if: github.event_name == 'release' && runner.os != 'Windows'
+      if: runner.os != 'Windows'
       run: |
         cd dist
         tar -czf ../${{ matrix.artifact_name }}.tar.gz *
 
     - name: Create release archive (Windows)
-      if: github.event_name == 'release' && runner.os == 'Windows'
+      if: runner.os == 'Windows'
       run: |
         cd dist
         Compress-Archive -Path * -DestinationPath ../${{ matrix.artifact_name }}.zip
 
-    - name: Upload to release (Unix)
-      if: github.event_name == 'release' && runner.os != 'Windows'
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
       with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./${{ matrix.artifact_name }}.tar.gz
-        asset_name: ${{ matrix.artifact_name }}.tar.gz
-        asset_content_type: application/gzip
+        name: ${{ matrix.artifact_name }}
+        path: dist/*
+        retention-days: 90
 
-    - name: Upload to release (Windows)
-      if: github.event_name == 'release' && runner.os == 'Windows'
-      uses: actions/upload-release-asset@v1
+    - name: Upload to GitHub Release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ${{ matrix.artifact_name }}.${{ matrix.archive_ext }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./${{ matrix.artifact_name }}.zip
-        asset_name: ${{ matrix.artifact_name }}.zip
-        asset_content_type: application/zip
