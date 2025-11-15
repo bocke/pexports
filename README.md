@@ -1,7 +1,7 @@
 README
 ======
 
-Export from MinGW OSDN repo: converted to meson from autoconf to avoid dependency on build-aux package.
+Export from MinGW OSDN repo. Changes: converted to meson from autoconf to avoid dependency on build-aux package.
 
 Plans: None, other than making it compile without external deps.
 
