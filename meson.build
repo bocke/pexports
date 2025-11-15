@@ -11,7 +11,7 @@ project(
 )
 
 # Set POSIX feature test macro for compatible systems
-if host_machine.system() in ['linux', 'freebsd', 'openbsd', 'netbsd', 'sunos', 'darwin']
+if host_machine.system() != 'windows'
   add_project_arguments('-D_POSIX_C_SOURCE=200809L', language: 'c')
 endif
 
