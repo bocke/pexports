@@ -8,7 +8,9 @@ Converted to meson from autoconf to avoid dependency on build-aux package.
 Plans: None, other than making it compile without external deps.
 
 
-## PEXPORTS 0.47
+## PEXPORTS 0.47 
+
+**NOTE**: The following text is from the original docs for 0.47!
 
 PEXPORTS is a program to extract exported symbols from a PE image
 (executable). It can perform a simple check on the size of the
