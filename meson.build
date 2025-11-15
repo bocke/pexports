@@ -16,8 +16,8 @@ if host_machine.system() != 'windows'
 endif
 
 # Declare a dependency for flex and bison
-flex = find_program('flex', 'lex')
-bison = find_program('bison', 'yacc')
+flex = find_program('flex', 'win_flex', required: true)
+bison = find_program('bison', 'win_bison', required: true)
 
 # Generate lexer from hlex.l
 hlex_c = custom_target(
