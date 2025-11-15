@@ -10,18 +10,6 @@ Plans: None, other than making it compile without external deps.
 
 ## PEXPORTS 0.47
 
-Anders Norlander <anorland@hem2.passagen.se>
-URL: http://hem2.passagen.se/anorland/
-
-Hacked by Paul.Sokolovsky@technologist.com
-URL: http://www.is.lg.ua/~paul/devel/binutils.html
-
-Hacked by Tor Lillqvist <tml@iki.fi>
-
-Hacked by Keith Marshall <keithmarshall@users.sourceforge.net>
-
-============================================
-
 PEXPORTS is a program to extract exported symbols from a PE image
 (executable). It can perform a simple check on the size of the
 arguments of the exported functions, provided there is a header with
@@ -126,3 +114,12 @@ Pexports, Copyright (C) 1998 Anders Norlander
 This program has ABSOLUTELY NO WARRANTY; This is free software, and you are
 welcome to redistribute it under certain conditions; see COPYING
 for details.
+
+## CREDITS
+
+ * Anders Norlander (the original author)
+ * Paul Sokolovsky
+ * Tor Lillqvist
+ * Keith Marshall (SourceForge)
+ * MinGW32 OSDN repo maintainers until circa 2023
+ * Bojan Popovic (this repo)
