@@ -56,7 +56,7 @@ Please do not report bugs, but feel free to send patches.
 
 ## COPYRIGHT
 
-Pexports, Copyright (C) 1998 Anders Norlander
+Pexports, Copyright (C) 1998-2025 Anders Norlander and contributors.
 
 This program has ABSOLUTELY NO WARRANTY; This is free software, and you are
 welcome to redistribute it under certain conditions; see COPYING
